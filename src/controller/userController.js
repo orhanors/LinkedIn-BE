@@ -81,7 +81,7 @@ exports.profileDelete = async (req, res, next) => {
 		const { userId } = req.params;
 		const deletedProfile = await db.User.findByIdAndDelete(userId);
 		if (!deletedProfile) throw new ApiError(404, "User");
-		//TODOD DELETE ALSO RELATED EXPERINCES
+		//TODO DELETE ALSO RELATED EXPERINCES
 		res.status(200).json({ data: "Successfully deleted" });
 	} catch (error) {
 		console.log("Profile DELETE controller error", error);

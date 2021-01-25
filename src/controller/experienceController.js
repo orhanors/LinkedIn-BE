@@ -19,3 +19,19 @@ exports.experiencePost = async (req, res, next) => {
 		next(error);
 	}
 };
+
+exports.experienceDelete = async (req, res, next) => {
+	try {
+		const editedUser = await db.User.findOneAndUpdate(
+			{
+				_id: req.params.userId,
+			},
+			{ $pull: { experiences: req.params.expId } }
+		);
+
+		res.status(200).json({ data: "OK" });
+	} catch (error) {
+		console.log("Experience DELETE controller error: ", error);
+		next(error);
+	}
+};

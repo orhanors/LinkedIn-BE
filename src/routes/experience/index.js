@@ -13,5 +13,6 @@ router.post(
 	validateBody(experienceSchema),
 	experiencePost
 );
+router.delete("/:userId/experiences/:expId", experienceDelete);
 
 module.exports = router;
