@@ -1,5 +1,12 @@
 const router = require("express").Router();
-const { signup, login } = require("../../controller/userController");
+const {
+	signup,
+	login,
+	profileGetAll,
+	profileGetSingle,
+	profileEdit,
+	profileDelete,
+} = require("../../controller/userController");
 const {
 	userSignupSchema,
 	validateBody,
@@ -16,6 +23,13 @@ router.post(
 	passport.authenticate("local", { session: false }),
 	login
 );
+
+//PROFILE
+router.get("/", profileGetAll);
+router.get("/:userId", profileGetSingle);
+router.put("/:userId", validateBody(userSignupSchema), profileEdit);
+router.delete("/:userId", profileDelete);
+
 //TEST ROUTE
 router.get(
 	"/secret",

@@ -2,6 +2,7 @@ const ApiError = require("../classes/ApiError");
 const { signJWT } = require("../helpers/jwt");
 const db = require("../models");
 
+//AUTH
 exports.signup = async (req, res, next) => {
 	try {
 		const { email, password } = req.body;
@@ -27,6 +28,64 @@ exports.login = async (req, res, next) => {
 		res.status(201).json({ token });
 	} catch (error) {
 		console.log("Login controller error", error);
+		next(error);
+	}
+};
+
+//PROFILE
+exports.profileGetAll = async (req, res, next) => {
+	try {
+		const allProfiles = await db.User.find({}, { password: 0 });
+		res.status(200).json({ data: allProfiles });
+	} catch (error) {
+		console.log("Profile GETALL controller error", error);
+		next(error);
+	}
+};
+
+exports.profileGetSingle = async (req, res, next) => {
+	try {
+		const { userId } = req.params;
+		const foundProfile = await db.User.findById(userId, { password: 0 });
+		if (!foundProfile) throw new ApiError(404, "User");
+		res.status(200).json({ data: foundProfile });
+	} catch (error) {
+		console.log("Profile GETSINGLE controller error", error);
+		if (error.name === "CastError") return next(new ApiError(404, "User"));
+		next(error);
+	}
+};
+
+exports.profileEdit = async (req, res, next) => {
+	try {
+		const { userId } = req.params;
+		const editedProfile = await db.User.findByIdAndUpdate(
+			userId,
+			{
+				$set: { ...req.body },
+			},
+			{ new: true }
+		);
+
+		console.log("edited profile", editedProfile);
+		res.status(201).json({ data: editedProfile });
+	} catch (error) {
+		console.log("Profile PUT controller error", error);
+		if (error.name === "CastError") return next(new ApiError(404, "User"));
+		next(error);
+	}
+};
+
+exports.profileDelete = async (req, res, next) => {
+	try {
+		const { userId } = req.params;
+		const deletedProfile = await db.User.findByIdAndDelete(userId);
+		if (!deletedProfile) throw new ApiError(404, "User");
+		//TODOD DELETE ALSO RELATED EXPERINCES
+		res.status(200).json({ data: "Successfully deleted" });
+	} catch (error) {
+		console.log("Profile DELETE controller error", error);
+		if (error.name === "CastError") return next(new ApiError(404, "User"));
 		next(error);
 	}
 };
