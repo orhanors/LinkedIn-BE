@@ -1,7 +1,7 @@
 const Joi = require("joi");
 
 exports.experienceSchema = Joi.object().keys({
-	user: Joi.required(), 
+	//user: Joi.required(),
 	role: Joi.string().min(3).required(),
 	company: Joi.string().min(3).required(),
 	startDate: Joi.date().required(),
@@ -12,7 +12,7 @@ exports.experienceSchema = Joi.object().keys({
 	image: Joi.string().pattern(
 		/http?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/
 	),
-})
+});
 
 exports.userSignupSchema = Joi.object().keys({
 	name: Joi.string().min(1).required(),
@@ -23,7 +23,7 @@ exports.userSignupSchema = Joi.object().keys({
 	bio: Joi.string().min(1),
 	title: Joi.string().max(300),
 	area: Joi.string().max(100),
-	experiences: Joi.required(),
+	//experiences: Joi.required(),
 	image: Joi.string().pattern(
 		/http?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/
 	),
