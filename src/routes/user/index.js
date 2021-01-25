@@ -7,6 +7,8 @@ const {
 } = require("../../middlewares/validator");
 
 const passport = require("../../middlewares/passport");
+
+// AUTH
 router.post("/auth/signup", validateBody(userSignupSchema), signup);
 router.post(
 	"/auth/login",
@@ -14,7 +16,7 @@ router.post(
 	passport.authenticate("local", { session: false }),
 	login
 );
-
+//TEST ROUTE
 router.get(
 	"/secret",
 	passport.authenticate("jwt", { session: false }),
