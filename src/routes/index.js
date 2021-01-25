@@ -5,8 +5,8 @@ const experiencesRouter = require("./experience");
 
 router.use("/profile", usersRouter);
 
-router.use("/users", usersRouter);
-router.use("/users/userName/experiences", experiencesRouter);
+
+router.use("/profile", experiencesRouter);
 
 
 module.exports = router;

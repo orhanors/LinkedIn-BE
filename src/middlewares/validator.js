@@ -1,12 +1,12 @@
 const Joi = require("joi");
 
 exports.experienceSchema = Joi.object().keys({
-	user: Joi.string().required(), 
+	user: Joi.required(), 
 	role: Joi.string().min(3).required(),
 	company: Joi.string().min(3).required(),
 	startDate: Joi.date().required(),
 	endDate: Joi.date(),
-	username: Joi.string().required(),
+	//username: Joi.string().required(),
 	description: Joi.string().max(300),
 	area: Joi.string(),
 	image: Joi.string().pattern(

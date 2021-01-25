@@ -1,12 +1,9 @@
 const router = require("express").Router();
 const { validateBody, experienceSchema } = require("../../middlewares/validator");
-const {experience} = require("../../controller/experienceController")
+const {experiencePost} = require("../../controller/experienceController")
 
-router.post(validateBody(experienceSchema), experience)
+router.post("/:userId/experiences", validateBody(experienceSchema), experiencePost)
 
-router.post("/", async (req, res, next) => {
-    
-})
 
 
 module.exports = router;

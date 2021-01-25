@@ -1,16 +1,14 @@
 const ApiError = require("../classes/ApiError")
 const db = require("../models")
-exports.experience = async (req, res, next) => {
+exports.experiencePost = async (req, res, next) => {
     try {
-        const { user } = req.body
-        const foundUser = await db.User.findOne({ _id })
-        if (foundUser) {
+        const { userId } = req.params
+        const foundUser = await db.User.findById(userId)
+        if (!foundUser) throw new ApiError(404, "User") 
         const newExperience = await new db.Experience(req.body)
         await newExperience.save()
-        } else {
-        throw new ApiError(401, "User not found") //TODO check why it doesn't come out this message
-        next()
-        }
+        
+        const editedUser = await db.findByIdAndUpdate(userId,{$push:{experiences:newExperience._id}})
         res.status(201).json({ data: newExperience })
     } catch (error) {
         console.log("Post controller error", error)
