@@ -25,7 +25,7 @@ exports.get = async (req, res) => {
       if (posts.length > 0) {
         res.status(201).json({ data: posts })
       } else {
-        console.log("there are no posts for this user")
+        console.log("there are no posts ")
       }
     } else {
       throw new ApiError(401, "Posts not found")
@@ -35,7 +35,7 @@ exports.get = async (req, res) => {
 
 exports.getSinglePost = async (req, res) => {
   try {
-    const post = await db.Post.findById(req.params.postId)
+    const post = await db.Post.findById(req.params.postId).populate("user")
     if (!post) {
       throw new ApiError(401, "Post not found")
     } else {
@@ -75,6 +75,12 @@ exports.deletePost = async (req, res, next) => {
   }
 }
 
+exports.postImage = async (req, res, next) => {
+  try {
+  } catch (error) {
+    console.log(error)
+  }
+}
 // - GET https://yourapi.herokuapp.com/api/posts/
 // Retrieve posts
 // - POST https://yourapi.herokuapp.com/api/posts/
