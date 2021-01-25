@@ -11,7 +11,9 @@ const userSchema = new mongoose.Schema(
 		title: { type: String },
 		area: { type: String },
 		image: { type: String },
-		experiences:[{type:mongoose.Schema.Types.ObjectId ,ref="Experience"}]
+		experiences: [
+			{ type: mongoose.Schema.Types.ObjectId, ref: "Experience" },
+		],
 	},
 	{ timestamp: true }
 );
