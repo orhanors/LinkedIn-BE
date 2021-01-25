@@ -1,9 +1,22 @@
 const Joi = require("joi");
 
-exports.userSchema = Joi.object().keys({
+exports.userSignupSchema = Joi.object().keys({
 	name: Joi.string().min(1).required(),
 	surname: Joi.string().required(),
 	email: Joi.string().email().required(),
+	username: Joi.string().min(3).required(),
+	password: Joi.string().min(6).required(),
+	bio: Joi.string().min(1),
+	title: Joi.string().max(300),
+	area: Joi.string().max(100),
+	image: Joi.string().pattern(
+		/http?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/
+	),
+});
+
+exports.userLoginSchema = Joi.object().keys({
+	email: Joi.string().email().required(),
+	password: Joi.string().min(6).required(),
 });
 
 // Generic validator function to check body
