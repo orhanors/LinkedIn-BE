@@ -1,14 +1,14 @@
-const mongoose = require("moongose")
+const mongoose = require("mongoose")
+
 
 const experienceSchema = new mongoose.Schema(
-    {
+    {   username: { type: String },
         role: { type: String },
         company: { type: String },
-        startDate: { type: new Date(year, month + 1, day) },
-        endDate: { type: new Date(year, month + 1, day) },
+        startDate: { type: Date, default: Date.now},
+        endDate: { type: Date, default: Date.now },
         description: { type: String },
         area: { type: String },
-        username: { type: String },
         image: { type: String }
     },
     { timestamps: true },
