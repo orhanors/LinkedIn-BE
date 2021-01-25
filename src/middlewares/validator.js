@@ -9,7 +9,8 @@ exports.userSchema = Joi.object().keys({
 exports.postSchema = Joi.object().keys({
   text: Joi.string().min(1).required(),
   username: Joi.string().required(),
-  user: Joi.string().required(), //TODO check this one
+  user: Joi.required(), //TODO check this one
+  image: Joi.string(),
 })
 
 // Generic validator function to check body

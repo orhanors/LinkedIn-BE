@@ -3,25 +3,82 @@ const db = require("../models")
 exports.post = async (req, res, next) => {
   try {
     const { user } = req.body
-    const foundUser = await db.User.findOne({ _id })
-    if (foundUser) {
+    const foundUser = await db.User.findById(user)
+    console.log(foundUser)
+    if (!foundUser) {
+      throw new ApiError(401, "User not found")
+    } else {
       const newPost = await new db.Post(req.body)
       await newPost.save()
-    } else {
-      throw new ApiError(401, "User not found") //TODO check why it doesn't come out this message
-      next()
+      res.status(201).json({ data: newPost })
     }
-    res.status(201).json({ data: newPost })
   } catch (error) {
     console.log("Post controller error", error)
     next(error)
   }
 }
 
+exports.get = async (req, res) => {
+  try {
+    const posts = await db.Post.find()
+    if (posts) {
+      if (posts.length > 0) {
+        res.status(201).json({ data: posts })
+      } else {
+        console.log("there are no posts for this user")
+      }
+    } else {
+      throw new ApiError(401, "Posts not found")
+    }
+  } catch (error) {}
+}
+
+exports.getSinglePost = async (req, res) => {
+  try {
+    const post = await db.Post.findById(req.params.postId)
+    if (!post) {
+      throw new ApiError(401, "Post not found")
+    } else {
+      res.status(201).json({ data: post })
+    }
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+exports.modifyPost = async (req, res, next) => {
+  try {
+    const modifiedPost = await db.Post.findByIdAndUpdate(
+      req.params.postId,
+      req.body
+    )
+    if (!modifiedPost) {
+      throw new ApiError(401, "Post not found")
+    } else {
+      res.status(201).json({ data: modifiedPost })
+    }
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+exports.deletePost = async (req, res, next) => {
+  try {
+    const deletePost = await db.Post.findByIdAndDelete(req.params.postId)
+    if (deletePost) {
+      res.status(203).send("Post deleted")
+    } else {
+      throw new ApiError(401, "Post not found")
+    }
+  } catch (error) {
+    console.log(error)
+  }
+}
+
 // - GET https://yourapi.herokuapp.com/api/posts/
 // Retrieve posts
 // - POST https://yourapi.herokuapp.com/api/posts/
-// Creates a new post
+// Creates a new post  DONE
 // - GET https://yourapi.herokuapp.com/api/posts/{postId}
 // Retrieves the specified post
 // - PUT https://yourapi.herokuapp.com/api/posts/{postId}
