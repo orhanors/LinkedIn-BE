@@ -5,6 +5,7 @@ const {
 	validateBody,
 	userLoginSchema,
 } = require("../../middlewares/validator");
+
 const passport = require("../../middlewares/passport");
 router.post("/auth/signup", validateBody(userSignupSchema), signup);
 router.post(
