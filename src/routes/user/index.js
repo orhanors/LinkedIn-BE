@@ -14,4 +14,15 @@ router.post(
 	login
 );
 
+router.get(
+	"/secret",
+	passport.authenticate("jwt", { session: false }),
+	(req, res) => {
+		try {
+			res.send("OK");
+		} catch (error) {
+			next(error);
+		}
+	}
+);
 module.exports = router;
