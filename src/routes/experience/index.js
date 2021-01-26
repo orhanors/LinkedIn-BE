@@ -6,6 +6,8 @@ const {
 const {
 	experiencePost,
 	experienceDelete,
+	experienceGetAll,
+	experienceGetById
 } = require("../../controller/experienceController");
 
 router.post(
@@ -14,5 +16,10 @@ router.post(
 	experiencePost
 );
 router.delete("/:userId/experiences/:expId", experienceDelete);
+
+router.get("/:userId/experiences", experienceGetAll)
+
+router.get("/:userId/experiences/:expId", experienceGetById)
+
 
 module.exports = router;
