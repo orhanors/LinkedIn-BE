@@ -25,7 +25,7 @@ exports.login = async (req, res, next) => {
 	try {
 		//Passport middleware adds req.user
 		const token = signJWT(req.user);
-		res.status(201).json({ token });
+		res.status(201).json({ token, user: req.user });
 	} catch (error) {
 		console.log("Login controller error", error);
 		next(error);
@@ -46,7 +46,9 @@ exports.profileGetAll = async (req, res, next) => {
 exports.profileGetSingle = async (req, res, next) => {
 	try {
 		const { userId } = req.params;
-		const foundProfile = await db.User.findById(userId, { password: 0 });
+		const foundProfile = await db.User.findById(userId, {
+			password: 0,
+		}).populate("experiences");
 		if (!foundProfile) throw new ApiError(404, "User");
 		res.status(200).json({ data: foundProfile });
 	} catch (error) {
