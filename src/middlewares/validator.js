@@ -1,17 +1,44 @@
 const Joi = require("joi")
 
-exports.userSchema = Joi.object().keys({
-  name: Joi.string().min(1).required(),
-  surname: Joi.string().required(),
-  email: Joi.string().email().required(),
-})
-
 exports.postSchema = Joi.object().keys({
   text: Joi.string().min(1).required(),
   username: Joi.string().required(),
   user: Joi.required(), //TODO check this one
   image: Joi.string(),
 })
+exports.experienceSchema = Joi.object().keys({
+	//user: Joi.required(),
+	role: Joi.string().min(3).required(),
+	company: Joi.string().min(3).required(),
+	startDate: Joi.date().required(),
+	endDate: Joi.date(),
+	//username: Joi.string().required(),
+	description: Joi.string().max(300),
+	area: Joi.string(),
+	image: Joi.string().pattern(
+		/http?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/
+	),
+});
+
+exports.userSignupSchema = Joi.object().keys({
+	name: Joi.string().min(1).required(),
+	surname: Joi.string().required(),
+	email: Joi.string().email().required(),
+	username: Joi.string().min(3).required(),
+	password: Joi.string().min(6).required(),
+	bio: Joi.string().min(1),
+	title: Joi.string().max(300),
+	area: Joi.string().max(100),
+	//experiences: Joi.required(),
+	image: Joi.string().pattern(
+		/http?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/
+	),
+});
+
+exports.userLoginSchema = Joi.object().keys({
+	email: Joi.string().email().required(),
+	password: Joi.string().min(6).required(),
+});
 
 // Generic validator function to check body
 exports.validateBody = (schema) => {
