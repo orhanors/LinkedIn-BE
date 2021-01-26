@@ -10,7 +10,11 @@ const userSchema = new mongoose.Schema(
 		bio: { type: String },
 		title: { type: String },
 		area: { type: String },
-		image: { type: String },
+		image: {
+			type: String,
+			default:
+				"https://icon-library.com/images/no-profile-pic-icon/no-profile-pic-icon-24.jpg",
+		},
 		experiences: [
 			{ type: mongoose.Schema.Types.ObjectId, ref: "Experience" },
 		],
