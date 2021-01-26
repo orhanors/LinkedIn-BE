@@ -1,5 +1,11 @@
-const Joi = require("joi");
+const Joi = require("joi")
 
+exports.postSchema = Joi.object().keys({
+  text: Joi.string().min(1).required(),
+  username: Joi.string().required(),
+  user: Joi.required(), //TODO check this one
+  image: Joi.string(),
+})
 exports.experienceSchema = Joi.object().keys({
 	//user: Joi.required(),
 	role: Joi.string().min(3).required(),
@@ -36,24 +42,22 @@ exports.userLoginSchema = Joi.object().keys({
 
 // Generic validator function to check body
 exports.validateBody = (schema) => {
-	return (req, res, next) => {
-		const { error } = schema.validate(req.body);
+  return (req, res, next) => {
+    const { error } = schema.validate(req.body)
 
-		if (error) {
-			let originalErrorMessage = error.details[0].message;
-			let modifiedErrorMessage =
-				error.details[0].path +
-				" " +
-				originalErrorMessage.substring(
-					originalErrorMessage.indexOf(" ") + 1
-				);
-			return res.status(400).json({ errors: modifiedErrorMessage });
-		}
+    if (error) {
+      let originalErrorMessage = error.details[0].message
+      let modifiedErrorMessage =
+        error.details[0].path +
+        " " +
+        originalErrorMessage.substring(originalErrorMessage.indexOf(" ") + 1)
+      return res.status(400).json({ errors: modifiedErrorMessage })
+    }
 
-		if (!req.value) {
-			req.value = {};
-		}
+    if (!req.value) {
+      req.value = {}
+    }
 
-		next();
-	};
-};
+    next()
+  }
+}
