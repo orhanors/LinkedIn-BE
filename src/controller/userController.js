@@ -89,3 +89,21 @@ exports.profileDelete = async (req, res, next) => {
 		next(error);
 	}
 };
+
+exports.profileUploadImage = async (req, res, next) => {
+	try {
+		const { userId } = req.params;
+
+		const updatedUser = await db.User.findOneAndUpdate(
+			{ _id: userId },
+			{ $set: { image: req.file.path } },
+			{ new: true }
+		);
+		console.log("updated user", updatedUser);
+		if (!updatedUser) throw new ApiError(404, "User");
+		res.status(201).json({ data: updatedUser });
+	} catch (error) {
+		console.log("Profile Image Upload error: ", error);
+		next(error);
+	}
+};

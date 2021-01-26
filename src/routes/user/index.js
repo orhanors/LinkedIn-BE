@@ -6,6 +6,7 @@ const {
 	profileGetSingle,
 	profileEdit,
 	profileDelete,
+	profileUploadImage,
 } = require("../../controller/userController");
 const {
 	userSignupSchema,
@@ -14,6 +15,8 @@ const {
 } = require("../../middlewares/validator");
 
 const passport = require("../../middlewares/passport");
+
+const cloudinaryMulter = require("../../middlewares/cloudinary");
 
 // AUTH
 router.post("/auth/signup", validateBody(userSignupSchema), signup);
@@ -48,6 +51,11 @@ experiencesRouter.post("/:id/experiences", async (req, res, next) => {
 router.get("/", profileGetAll);
 router.get("/:userId", profileGetSingle);
 router.put("/:userId", validateBody(userSignupSchema), profileEdit);
+router.post(
+	"/:userId/picture",
+	cloudinaryMulter.single("profile"),
+	profileUploadImage
+);
 router.delete("/:userId", profileDelete);
 
 //TEST ROUTE
