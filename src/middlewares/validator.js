@@ -31,7 +31,7 @@ exports.userSignupSchema = Joi.object().keys({
 	bio: Joi.string().min(1),
 	title: Joi.string().max(300),
 	area: Joi.string().max(100),
-	//experiences: Joi.required(),
+	//experiences: Joi.exist(),
 	image: Joi.string().pattern(
 		/http?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/
 	),
@@ -45,7 +45,6 @@ exports.userEditSchema = Joi.object().keys({
 	bio: Joi.string().min(1),
 	title: Joi.string().max(300),
 	area: Joi.string().max(100),
-	//experiences: Joi.required(),
 	image: Joi.string(),
 });
 
