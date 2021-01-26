@@ -2,10 +2,16 @@ const ApiError = require("../classes/ApiError");
 const mongoose = require("mongoose");
 const db = require("../models");
 const { User, Experience } = require("../models");
+
+
 const fs = require('fs');
 const MongoClient = require('mongodb').MongoClient;
 const url = process.env.MONGODB_URI
-const Json2csvParser = require('json2csv').Parser;
+//const Json2csvParser = require('json2csv').Parser;
+const { Transform } = require("json2csv")
+const { pipeline } = require("stream")
+const { join } = require("path")
+const { createReadStream } = require("fs-extra")
 
 exports.experienceGetCsv = async (req, res, next) => {
 	try {
@@ -16,12 +22,29 @@ exports.experienceGetCsv = async (req, res, next) => {
 			let dbo = db.db("linkedin");
 			let result = []
   
-			dbo.collection("experiences").find({}).toArray(function (err, result) {
+			dbo.collection("experiences").find({}).toString(function (err, result) {
 				if (err) throw err;
 				console.log(result);
 				//res.send(result)
 
-				const csvFields = ['_id', 'role', 'company', 'startDate', 'endDate', 'description', 'area', 'user'];
+				
+    			const jsonReadableStream = createReadStream(result)
+
+				const json2csv = new Transform({
+				fields: ['_id', 'role', 'company', 'startDate', 'endDate', 'description', 'area', 'user'],
+				})
+
+				res.setHeader("Content-Disposition", "attachment; filename=export.csv")
+				pipeline(jsonReadableStream, json2csv, res, err => {
+				if (err) {
+					console.log(err)
+					next(err)
+				} else {
+					console.log("Done")
+				}
+				})
+
+				/* const csvFields = ['_id', 'role', 'company', 'startDate', 'endDate', 'description', 'area', 'user'];
   				const json2csvParser = new Json2csvParser({ csvFields });
   				const csv = json2csvParser.parse(result);
 				console.log(csv);
@@ -31,14 +54,7 @@ exports.experienceGetCsv = async (req, res, next) => {
 				fs.writeFile('export.csv', csv, function(err) {
     			if (err) throw err;
     			console.log('file saved');	
-				
-				/* pipeline(csv, res, err => {
-      			if (err) {
-        		console.log(err)
-        		next(err)
-      			} else {
-        		console.log("Done") */
-				})
+				}) */
 				db.close();
     })
 
