@@ -9,7 +9,7 @@ const {
 	experienceGetAll,
 	experienceGetById,
 	experiencePut,
-	experienceGetCsv2,
+	experienceGetCsv,
 	experienceUploadImage,
 } = require("../../controller/experienceController");
 const cloudinaryMulter = require("../../middlewares/cloudinary");
@@ -20,7 +20,7 @@ router.post(
 );
 router.delete("/:userId/experiences/:expId", experienceDelete);
 
-router.get("/:userId/experiences/export/CSV", experienceGetCsv2);
+router.get("/:userId/experiences/export/CSV", experienceGetCsv);
 router.get("/:userId/experiences", experienceGetAll);
 
 router.get("/:userId/experiences/:expId", experienceGetById);

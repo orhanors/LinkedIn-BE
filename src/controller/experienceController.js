@@ -11,7 +11,7 @@ const { pipeline } = require("stream");
 const { join } = require("path");
 const { createReadStream, writeJSON, remove } = require("fs-extra");
 
-exports.experienceGetCsv2 = async (req, res, next) => {
+exports.experienceGetCsv = async (req, res, next) => {
 	try {
 		const userExperiences = await db.User.findOne(
 			{ _id: req.params.userId },
@@ -41,79 +41,6 @@ exports.experienceGetCsv2 = async (req, res, next) => {
 		await remove(path);
 	} catch (error) {
 		console.log("Csv export error: ", error);
-		next(error);
-	}
-};
-exports.experienceGetCsv = async (req, res, next) => {
-	try {
-		MongoClient.connect(url, { useNewUrlParser: true }, function (err, db) {
-			if (err) throw err;
-
-			let dbo = db.db("linkedin");
-			let result = [];
-
-			dbo.collection("experiences")
-				.find({})
-				.toString(function (err, result) {
-					if (err) throw err;
-					console.log(result);
-					//res.send(result)
-
-					const jsonReadableStream = createReadStream(result);
-
-					const json2csv = new Transform({
-						fields: [
-							"_id",
-							"role",
-							"company",
-							"startDate",
-							"endDate",
-							"description",
-							"area",
-							"user",
-						],
-					});
-
-					res.setHeader(
-						"Content-Disposition",
-						"attachment; filename=export.csv"
-					);
-					pipeline(jsonReadableStream, json2csv, res, (err) => {
-						if (err) {
-							console.log(err);
-							next(err);
-						} else {
-							console.log("Done");
-						}
-					});
-
-					/* const csvFields = ['_id', 'role', 'company', 'startDate', 'endDate', 'description', 'area', 'user'];
-  				const json2csvParser = new Json2csvParser({ csvFields });
-  				const csv = json2csvParser.parse(result);
-				console.log(csv);
-				//res.send(csv)
-
-				res.setHeader("Content-Disposition", "attachment; filename=export.csv")
-				fs.writeFile('export.csv', csv, function(err) {
-    			if (err) throw err;
-    			console.log('file saved');	
-				}) */
-					db.close();
-				});
-		});
-		// -> Check 'customer.csv' file in root project folder
-
-		/* res.setHeader("Content-Disposition", "attachment; filename=export.csv")
-    pipeline(jsonReadableStream, json2csv, res, err => {
-      if (err) {
-        console.log(err)
-        next(err)
-      } else {
-        console.log("Done")
-      }
-    }) */
-	} catch (error) {
-		console.log("Experience Post Csv controller error: ", error);
 		next(error);
 	}
 };
