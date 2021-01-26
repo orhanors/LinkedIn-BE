@@ -12,6 +12,7 @@ const {
 	userSignupSchema,
 	validateBody,
 	userLoginSchema,
+	userEditSchema,
 } = require("../../middlewares/validator");
 
 const passport = require("../../middlewares/passport");
@@ -50,7 +51,7 @@ experiencesRouter.post("/:id/experiences", async (req, res, next) => {
 //PROFILE
 router.get("/", profileGetAll);
 router.get("/:userId", profileGetSingle);
-router.put("/:userId", validateBody(userSignupSchema), profileEdit);
+router.put("/:userId", validateBody(userEditSchema), profileEdit);
 router.post(
 	"/:userId/picture",
 	cloudinaryMulter.single("profile"),
