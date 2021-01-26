@@ -35,7 +35,10 @@ exports.get = async (req, res) => {
 
 exports.getSinglePost = async (req, res) => {
   try {
-    const post = await db.Post.findById(req.params.postId).populate("user")
+    const post = await db.Post.findById(req.params.postId).populate({
+      path: "user",
+      select: ["name", "surname", "image"],
+    })
     if (!post) {
       throw new ApiError(401, "Post not found")
     } else {
