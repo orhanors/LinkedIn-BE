@@ -6,14 +6,18 @@ const {
 	profileGetSingle,
 	profileEdit,
 	profileDelete,
+	profileUploadImage,
 } = require("../../controller/userController");
 const {
 	userSignupSchema,
 	validateBody,
 	userLoginSchema,
+	userEditSchema,
 } = require("../../middlewares/validator");
 
 const passport = require("../../middlewares/passport");
+
+const cloudinaryMulter = require("../../middlewares/cloudinary");
 
 // AUTH
 router.post("/auth/signup", validateBody(userSignupSchema), signup);
@@ -23,31 +27,16 @@ router.post(
 	passport.authenticate("local", { session: false }),
 	login
 );
-/* 
-//POST /users/:id/experiences
-experiencesRouter.post("/:id/experiences", async (req, res, next) => {
-  	try { 
-		const experienceUsers = await ExperienceModel.findByIdAndUpdate(
-		req.params.id,
-		{
-			$push: {
-			experiences: {
-				...req.body,
-			},
-			},
-		}
-		);
-		res.status(201).send(experienceUsers);
-	
-	} catch (error) {
-		next(error)
-	}
-}) */
 
 //PROFILE
 router.get("/", profileGetAll);
 router.get("/:userId", profileGetSingle);
-router.put("/:userId", validateBody(userSignupSchema), profileEdit);
+router.put("/:userId", validateBody(userEditSchema), profileEdit);
+router.post(
+	"/:userId/picture",
+	cloudinaryMulter.single("profile"),
+	profileUploadImage
+);
 router.delete("/:userId", profileDelete);
 
 //TEST ROUTE

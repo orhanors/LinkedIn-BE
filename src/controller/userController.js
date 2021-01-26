@@ -25,7 +25,7 @@ exports.login = async (req, res, next) => {
 	try {
 		//Passport middleware adds req.user
 		const token = signJWT(req.user);
-		res.status(201).json({ token });
+		res.status(201).json({ token, user: req.user });
 	} catch (error) {
 		console.log("Login controller error", error);
 		next(error);
@@ -46,12 +46,14 @@ exports.profileGetAll = async (req, res, next) => {
 exports.profileGetSingle = async (req, res, next) => {
 	try {
 		const { userId } = req.params;
-		const foundProfile = await db.User.findById(userId, { password: 0 });
+		const foundProfile = await db.User.findById(userId, {
+			password: 0,
+		}).populate("experiences");
 		if (!foundProfile) throw new ApiError(404, "User");
 		res.status(200).json({ data: foundProfile });
 	} catch (error) {
 		console.log("Profile GETSINGLE controller error", error);
-		if (error.name === "CastError") return next(new ApiError(404, "User"));
+		if (error.name == "CastError") return next(new ApiError(404, "User"));
 		next(error);
 	}
 };
@@ -82,10 +84,33 @@ exports.profileDelete = async (req, res, next) => {
 		const deletedProfile = await db.User.findByIdAndDelete(userId);
 		if (!deletedProfile) throw new ApiError(404, "User");
 		//TODO DELETE ALSO RELATED EXPERINCES
+		console.log("deleted Progile", deletedProfile);
+
+		const deletedExps = await db.Experience.deleteMany({
+			_id: { $in: deletedProfile.experiences },
+		});
 		res.status(200).json({ data: "Successfully deleted" });
 	} catch (error) {
 		console.log("Profile DELETE controller error", error);
 		if (error.name === "CastError") return next(new ApiError(404, "User"));
+		next(error);
+	}
+};
+
+exports.profileUploadImage = async (req, res, next) => {
+	try {
+		const { userId } = req.params;
+
+		const updatedUser = await db.User.findOneAndUpdate(
+			{ _id: userId },
+			{ $set: { image: req.file.path } },
+			{ new: true }
+		);
+		console.log("updated user", updatedUser);
+		if (!updatedUser) throw new ApiError(404, "User");
+		res.status(201).json({ data: updatedUser });
+	} catch (error) {
+		console.log("Profile Image Upload error: ", error);
 		next(error);
 	}
 };

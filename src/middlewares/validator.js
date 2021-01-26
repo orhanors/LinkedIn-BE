@@ -1,5 +1,13 @@
 const Joi = require("joi");
 
+exports.postSchema = Joi.object().keys({
+	text: Joi.string().min(1).required(),
+	username: Joi.string().required(),
+	user: Joi.required(), //TODO check this one
+	image: Joi.string().pattern(
+		/http?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/
+	),
+});
 exports.experienceSchema = Joi.object().keys({
 	user: Joi.string(),
 	role: Joi.string().min(3).required(),
@@ -24,10 +32,21 @@ exports.userSignupSchema = Joi.object().keys({
 	bio: Joi.string().min(1),
 	title: Joi.string().max(300),
 	area: Joi.string().max(100),
-	//experiences: Joi.required(),
+	//experiences: Joi.exist(),
 	image: Joi.string().pattern(
 		/http?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/
 	),
+});
+
+exports.userEditSchema = Joi.object().keys({
+	name: Joi.string().min(1).required(),
+	surname: Joi.string().required(),
+	email: Joi.string().email().required(),
+	username: Joi.string().min(3).required(),
+	bio: Joi.string().min(1),
+	title: Joi.string().max(300),
+	area: Joi.string().max(100),
+	image: Joi.string(),
 });
 
 exports.userLoginSchema = Joi.object().keys({
