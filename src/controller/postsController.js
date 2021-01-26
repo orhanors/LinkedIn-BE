@@ -1,5 +1,6 @@
 const ApiError = require("../classes/ApiError")
 const db = require("../models")
+
 exports.post = async (req, res, next) => {
   try {
     const { user } = req.body
@@ -80,6 +81,14 @@ exports.deletePost = async (req, res, next) => {
 
 exports.postImage = async (req, res, next) => {
   try {
+    const post = await db.Post.findById(req.params.postId)
+    if (!post) {
+      throw new ApiError(401, "Post not found")
+    } else {
+      post.image = req.file.path
+      await post.save()
+      res.status(201).send({ data: post })
+    }
   } catch (error) {
     console.log(error)
   }
