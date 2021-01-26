@@ -6,12 +6,44 @@ const { User, Experience } = require("../models");
 const fs = require("fs");
 const MongoClient = require("mongodb").MongoClient;
 const url = process.env.MONGODB_URI;
-//const Json2csvParser = require('json2csv').Parser;
 const { Transform } = require("json2csv");
 const { pipeline } = require("stream");
 const { join } = require("path");
-const { createReadStream } = require("fs-extra");
+const { createReadStream, writeJSON, remove } = require("fs-extra");
 
+exports.experienceGetCsv2 = async (req, res, next) => {
+	try {
+		const userExperiences = await db.User.findOne(
+			{ _id: req.params.userId },
+			{ experiences: 1, _id: 0 }
+		).populate("experiences");
+
+		const path = join(__dirname, "../../csv.json");
+		await writeJSON(path, userExperiences.experiences);
+
+		const jsonReadableStream = createReadStream(path);
+
+		const json2csv = new Transform({
+			fields: ["company", "description", "area"],
+		});
+
+		res.setHeader("Content-Disposition", "attachment; filename=export.csv");
+		pipeline(jsonReadableStream, json2csv, res, (err) => {
+			if (err) {
+				console.log("stream err:", err);
+				next(err);
+			} else {
+				console.log("res", res);
+				console.log("Done");
+			}
+		});
+
+		await remove(path);
+	} catch (error) {
+		console.log("Csv export error: ", error);
+		next(error);
+	}
+};
 exports.experienceGetCsv = async (req, res, next) => {
 	try {
 		MongoClient.connect(url, { useNewUrlParser: true }, function (err, db) {
