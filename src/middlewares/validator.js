@@ -9,7 +9,7 @@ exports.postSchema = Joi.object().keys({
 	),
 });
 exports.experienceSchema = Joi.object().keys({
-	//user: Joi.required(),
+	user: Joi.string(),
 	role: Joi.string().min(3).required(),
 	company: Joi.string().min(3).required(),
 	startDate: Joi.date().required(),
@@ -17,9 +17,10 @@ exports.experienceSchema = Joi.object().keys({
 	//username: Joi.string().required(),
 	description: Joi.string().max(300),
 	area: Joi.string(),
-	image: Joi.string().pattern(
-		/http?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/
-	),
+	image: Joi.string()
+		//.pattern(
+		///http?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/
+	//),
 });
 
 exports.userSignupSchema = Joi.object().keys({

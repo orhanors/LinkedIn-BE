@@ -1,6 +1,88 @@
 const ApiError = require("../classes/ApiError");
 const mongoose = require("mongoose");
 const db = require("../models");
+const { User, Experience } = require("../models");
+
+
+const fs = require('fs');
+const MongoClient = require('mongodb').MongoClient;
+const url = process.env.MONGODB_URI
+//const Json2csvParser = require('json2csv').Parser;
+const { Transform } = require("json2csv")
+const { pipeline } = require("stream")
+const { join } = require("path")
+const { createReadStream } = require("fs-extra")
+
+exports.experienceGetCsv = async (req, res, next) => {
+	try {
+		
+		MongoClient.connect(url, { useNewUrlParser: true }, function (err, db) {
+			if (err) throw err;
+  
+			let dbo = db.db("linkedin");
+			let result = []
+  
+			dbo.collection("experiences").find({}).toString(function (err, result) {
+				if (err) throw err;
+				console.log(result);
+				//res.send(result)
+
+				
+    			const jsonReadableStream = createReadStream(result)
+
+				const json2csv = new Transform({
+				fields: ['_id', 'role', 'company', 'startDate', 'endDate', 'description', 'area', 'user'],
+				})
+
+				res.setHeader("Content-Disposition", "attachment; filename=export.csv")
+				pipeline(jsonReadableStream, json2csv, res, err => {
+				if (err) {
+					console.log(err)
+					next(err)
+				} else {
+					console.log("Done")
+				}
+				})
+
+				/* const csvFields = ['_id', 'role', 'company', 'startDate', 'endDate', 'description', 'area', 'user'];
+  				const json2csvParser = new Json2csvParser({ csvFields });
+  				const csv = json2csvParser.parse(result);
+				console.log(csv);
+				//res.send(csv)
+
+				res.setHeader("Content-Disposition", "attachment; filename=export.csv")
+				fs.writeFile('export.csv', csv, function(err) {
+    			if (err) throw err;
+    			console.log('file saved');	
+				}) */
+				db.close();
+    })
+
+				
+  });
+  // -> Check 'customer.csv' file in root project folder
+  
+    
+
+			
+		
+
+    /* res.setHeader("Content-Disposition", "attachment; filename=export.csv")
+    pipeline(jsonReadableStream, json2csv, res, err => {
+      if (err) {
+        console.log(err)
+        next(err)
+      } else {
+        console.log("Done")
+      }
+    }) */
+		
+	} catch (error) {
+		console.log("Experience Post Csv controller error: ", error);
+		next(error);
+	}
+}
+
 exports.experiencePost = async (req, res, next) => {
 	try {
 		const { userId } = req.params;
@@ -29,9 +111,55 @@ exports.experienceDelete = async (req, res, next) => {
 			{ $pull: { experiences: req.params.expId } }
 		);
 
-		res.status(200).json({ data: "OK" });
+		res.status(200).json({ data: `Experience # ${req.params.expId} deleted` });
 	} catch (error) {
 		console.log("Experience DELETE controller error: ", error);
 		next(error);
 	}
 };
+
+exports.experienceGetAll = async (req, res, next) => {
+	try {
+		const findUser = await db.User.findOne(
+			{
+				_id: req.params.userId,
+			},
+			
+		).populate("experiences");
+		res.status(200).json({ data: findUser});
+	} catch (error) {
+		console.log("Experience GETALL controller error: ", error);
+		next(error);
+	}
+};
+
+
+exports.experienceGetById = async (req, res, next) => {
+	try {
+		const findExperience = await db.Experience.findById(
+			{
+				_id: req.params.expId,
+			}
+		)		
+		res.status(200).json({ data: findExperience});
+	} catch (error) {
+		console.log("Experience GET controller error: ", error);
+		next(error);
+	}
+};
+
+exports.experiencePut = async (req, res, next) => {
+	try {
+		const findExperience = await db.Experience.findByIdAndUpdate(
+			req.params.expId, req.body);
+		if (findExperience) res.status(200).json({ data: findExperience })
+
+		else throw new ApiError(404, "Experience");
+	} catch (error) {
+		console.log("Experience PUT controller error: ", error);
+		next(error);
+		
+	}
+}
+
+
