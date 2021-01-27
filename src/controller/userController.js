@@ -83,7 +83,7 @@ exports.profileDelete = async (req, res, next) => {
 		const { userId } = req.params;
 		const deletedProfile = await db.User.findByIdAndDelete(userId);
 		if (!deletedProfile) throw new ApiError(404, "User");
-		//TODO DELETE ALSO RELATED EXPERINCES
+
 		console.log("deleted Progile", deletedProfile);
 
 		const deletedExps = await db.Experience.deleteMany({
@@ -111,6 +111,120 @@ exports.profileUploadImage = async (req, res, next) => {
 		res.status(201).json({ data: updatedUser });
 	} catch (error) {
 		console.log("Profile Image Upload error: ", error);
+		next(error);
+	}
+};
+
+//FRIENDSHIP
+//TODO:Create a seperated function to handle same user exist check
+exports.sendFriendRequest = async (req, res, next) => {
+	try {
+		const { currentUserId, requestedUserId } = req.params;
+		const users = await db.User.find({
+			_id: { $in: [currentUserId, requestedUserId] },
+		});
+		if (users.length === 0 || users.length === 1)
+			throw new ApiError(404, "One or two user");
+
+		//Find the users who are sending request (current) and receiving request (requested)
+		const currentUser = users[1]; //orhan
+		const requestedUser = users[0]; //ubeyt
+
+		//Check if the current user is exist on requestedUser's "friendRequests" list
+		for (let pendingUser of requestedUser.friendRequests) {
+			if (pendingUser.toString() === currentUser._id.toString()) {
+				throw new ApiError(400, "Request is already exists");
+			}
+		}
+
+		//If the current user request is not exist,add requested user "friendRequests" array to current userId
+		requestedUser.friendRequests.push(currentUser._id);
+		await requestedUser.save();
+
+		res.status(200).json({ data: "OK" });
+	} catch (error) {
+		console.log("Profile SEND friend request error: ", error);
+		next(error);
+	}
+};
+
+exports.acceptFriendRequest = async (req, res, next) => {
+	try {
+		const { currentUserId, requestedUserId } = req.params;
+		const users = await db.User.find({
+			_id: { $in: [currentUserId, requestedUserId] },
+		});
+		if (users.length === 0 || users.length === 1)
+			throw new ApiError(404, "One or two user");
+
+		//Find the users who are sending request (current) and receiving request (requested)
+		const currentUser = users[0]; //ubeyt
+		const requestedUser = users[1]; //orhan
+
+		//Check if the current user has a request from requested user
+		const pendingUser = currentUser.friendRequests.find(
+			(user) => user.toString() === requestedUser._id.toString()
+		);
+
+		if (!requestedUser) throw new ApiError(404, "Request");
+
+		//Add as a friend to each user's "friends" list
+		currentUser.friends.push(requestedUser._id);
+		requestedUser.friends.push(currentUser._id);
+
+		//Delete request from current user's "friendRequests" list
+		currentUser.friendRequests = currentUser.friendRequests.filter(
+			(user) => user.toString() !== requestedUser._id.toString()
+		);
+
+		Promise.all([await currentUser.save(), await requestedUser.save()])
+			.then((result) => res.status(200).json({ data: "OK" }))
+			.catch((e) => next(new ApiError()));
+	} catch (error) {
+		console.log("Profile ACCEPT friend request error: ", error);
+		next(error);
+	}
+};
+
+exports.rejectFriendRequest = async (req, res, next) => {
+	try {
+		const { currentUserId, requestedUserId } = req.params;
+		const users = await db.User.find({
+			_id: { $in: [currentUserId, requestedUserId] },
+		});
+		if (users.length === 0 || users.length === 1)
+			throw new ApiError(404, "One or two user");
+
+		//Find the users who are sending request (current) and receiving request (requested)
+		const currentUser = users[0]; //ubeyt
+		const requestedUser = users[1]; //orhan
+
+		//Delete requestedUser from currentUser's "friendRequests" list
+		currentUser.friendRequests = currentUser.friendRequests.filter(
+			(user) => user.toString() !== requestedUser._id.toString()
+		);
+
+		await currentUser.save();
+
+		res.status(200).json({ data: "OK" });
+	} catch (error) {
+		console.log("Profile REJECT friend request error: ", error);
+		next(error);
+	}
+};
+
+exports.getFriendList = async (req, res, next) => {
+	try {
+		const { currentUserId } = req.params;
+
+		const foundUser = await db.User.findOne(
+			{ _id: currentUserId },
+			{ friends: 1, _id: 0 }
+		).populate({ path: "friends" });
+		if (!foundUser) throw new ApiError(404, "User");
+		res.status(200).json({ data: foundUser.friends });
+	} catch (error) {
+		console.log("Profile GET FRIENDLIST error: ", error);
 		next(error);
 	}
 };
