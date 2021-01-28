@@ -10,8 +10,7 @@ exports.signJWT = (payload) => {
 		iss: "linkedin",
 		sub: payload._id,
 		iat: new Date().getTime(),
-		exp: new Date().setDate(new Date().getDate() + 10), //10 days later
 	};
 
-	return JWT.sign(modifiedPayload, JWT_SECRET);
+	return JWT.sign(modifiedPayload, JWT_SECRET, { expiresIn: "20d" });
 };
