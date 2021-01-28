@@ -1,10 +1,13 @@
 const Joi = require("joi");
 
+exports.likeSchema = Joi.object().keys({
+	userId: Joi.required()
+})
+
 exports.commentSchema = Joi.object().keys({
 	comment: Joi.string().min(1).required(),
 	postId: Joi.required(),
 	userId: Joi.required()
-
 })
 
 exports.postSchema = Joi.object().keys({

@@ -9,13 +9,13 @@ const {
     likePost,
     likeDelete,
 } = require("../../controller/commentsController") 
-const { postSchema, commentSchema, validateBody } = require("../../middlewares/validator")
+const { postSchema, likeSchema, commentSchema, validateBody } = require("../../middlewares/validator")
 
 router.post("/:postId/comments", validateBody(commentSchema), commentPost)
 router.get("/:postId/comments", commentGet)
 router.put("/:postId/comments/:commentId", validateBody(commentSchema), commentPut)
 router.delete("/:postId/comments/:commentId", commentDelete)
-router.post("/:postId/likes", validateBody(postSchema), likePost)
+router.post("/:postId/likes", validateBody(likeSchema), likePost)
 router.delete("/:postId/likes/:likeId", likeDelete)
 
 module.exports = router

@@ -41,9 +41,9 @@ exports.commentPut = async (req, res, next) => {
 			req.body
         );
         console.log(findComment)
-        //if (findComment)
+        if (findComment)
             res.status(200).json({ data: findComment });
-		//else throw new ApiError(404, "Comment");
+		else throw new ApiError(404, "Comment");
     } catch (error) {
         console.log("Comments PUT controller error: ", error);
 		next(error);
@@ -70,14 +70,62 @@ exports.commentDelete = async (req, res, next) => {
 exports.likePost = async (req, res, next) => {
     try {
         const { postId } = req.params;
-		const foundPost = await db.Post.findByIdAndUpdate(postId,{
+        
+		/* const foundPost = await db.Post.findByIdAndUpdate(postId,{
             $push: {
                 likes: {
                 ...req.body,
                 },
             },
         });
-		res.status(201).send(foundPost);
+        res.status(201).send(foundPost) */
+
+        const foundPost = await db.Post.findById(postId);
+        /* console.log(foundPost)
+        console.log(foundPost.likes)
+        console.log(foundPost.likes[1]) */
+        console.log(req.body.userId)
+        const cazzoPost = foundPost.likes
+        const minchiaPost = cazzoPost.map(cazzo => cazzo.userId === req.body.userId)
+        if (!minchiaPost)
+        {
+            const shitPost = await db.Post.findByIdAndUpdate(postId, {
+                    $push: {
+                        likes: {
+                            ...req.body,
+                        },
+                    },
+            });
+            res.status(201).send(shitPost); 
+            }
+
+
+        /* for (i = 0; i < foundPost.likes.length; i++) {
+            console.log(foundPost.likes[i].userId)
+            if (foundPost.likes[i].userId !== req.body.userId) {
+                const shitPost = await db.Post.findByIdAndUpdate(postId, {
+                    $push: {
+                        likes: {
+                            ...req.body,
+                        },
+                    },
+                });
+                res.status(201).send(shitPost);  */
+            else { 
+                    const foundPost = await db.Like.findOneAndUpdate(
+                    {
+                        _id: req.params.postId,
+                    },{
+                    $pull: {
+                        likes: req.body.userId
+                        },
+                    });
+                res.status(201).send("No");
+                //const foundPost = await db.Like.deleteOne({ likes: { $gte: 10 } })
+                
+                //console.log("No")
+            }
+        
     } catch (error) {
         console.log("Comments LIKE POST controller error: ", error);
 		next(error);
@@ -90,7 +138,8 @@ exports.likeDelete = async (req, res, next) => {
 			{
 				_id: req.params.postId,
 			},
-			{ $pull: { likes: req.params} }
+            { $pull: { likes: req.params } }
+            //req.params.likeId before
 		);
 		res.status(200).json({
 			data: `Likes #deleted`,
