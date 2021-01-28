@@ -21,7 +21,10 @@ exports.post = async (req, res, next) => {
 
 exports.get = async (req, res) => {
   try {
-    const posts = await db.Post.find()
+    const posts = await db.Post.find().populate({
+      path: "user",
+      select: ["name", "surname", "image"],
+    })
     if (posts) {
       if (posts.length > 0) {
         res.status(201).json({ data: posts })
