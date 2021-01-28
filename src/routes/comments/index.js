@@ -9,7 +9,7 @@ const {
     likePost,
     likeDelete,
 } = require("../../controller/commentsController") 
-const { commentSchema, validateBody } = require("../../middlewares/validator")
+const { postSchema, commentSchema, validateBody } = require("../../middlewares/validator")
 
 router.post("/:postId/comments", validateBody(commentSchema), commentPost)
 router.get("/:postId/comments", commentGet)

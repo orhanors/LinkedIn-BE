@@ -2,6 +2,9 @@ const Joi = require("joi");
 
 exports.commentSchema = Joi.object().keys({
 	comment: Joi.string().min(1).required(),
+	postId: Joi.required(),
+	userId: Joi.required()
+
 })
 
 exports.postSchema = Joi.object().keys({
