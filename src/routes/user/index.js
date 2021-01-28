@@ -7,6 +7,10 @@ const {
 	profileEdit,
 	profileDelete,
 	profileUploadImage,
+	sendFriendRequest,
+	acceptFriendRequest,
+	rejectFriendRequest,
+	getFriendList,
 } = require("../../controller/userController");
 const {
 	userSignupSchema,
@@ -38,6 +42,23 @@ router.post(
 	profileUploadImage
 );
 router.delete("/:userId", profileDelete);
+
+//FRIENDSHIP
+router.post(
+	"/:currentUserId/request/friend/:requestedUserId",
+	sendFriendRequest
+);
+
+router.post(
+	"/:currentUserId/accept/friend/:requestedUserId",
+	acceptFriendRequest
+);
+
+router.delete(
+	"/:currentUserId/reject/friend/:requestedUserId",
+	rejectFriendRequest
+);
+router.get("/:currentUserId/friendlist", getFriendList);
 
 //TEST ROUTE
 router.get(

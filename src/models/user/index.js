@@ -18,6 +18,13 @@ const userSchema = new mongoose.Schema(
 		experiences: [
 			{ type: mongoose.Schema.Types.ObjectId, ref: "Experience" },
 		],
+		friends: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+		friendRequests: [
+			{
+				type: mongoose.Schema.Types.ObjectId,
+				ref: "User",
+			},
+		],
 	},
 	{ timestamp: true }
 );
