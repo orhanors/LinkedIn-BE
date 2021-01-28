@@ -1,12 +1,21 @@
 const Joi = require("joi");
 
+exports.commentSchema = Joi.object().keys({
+	comment: Joi.string().min(1).required(),
+	postId: Joi.required(),
+	userId: Joi.required()
+
+})
+
 exports.postSchema = Joi.object().keys({
 	text: Joi.string().min(1).required(),
 	username: Joi.string().required(),
 	user: Joi.required(), //TODO check this one
-	image: Joi.string().pattern(
+	likes: Joi.allow(),
+	image: Joi.string()
+		/* .pattern(
 		/http?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/
-	),
+	), */
 });
 exports.experienceSchema = Joi.object().keys({
 	user: Joi.string(),
@@ -17,10 +26,9 @@ exports.experienceSchema = Joi.object().keys({
 	//username: Joi.string().required(),
 	description: Joi.string().max(300),
 	area: Joi.string(),
-	image: Joi.string()
-		//.pattern(
-		///http?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/
-	//),
+	image: Joi.string().pattern(
+		/http?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/
+	),
 });
 
 exports.userSignupSchema = Joi.object().keys({
