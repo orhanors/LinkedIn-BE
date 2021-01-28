@@ -85,9 +85,23 @@ exports.likePost = async (req, res, next) => {
         console.log(foundPost.likes)
         console.log(foundPost.likes[1]) */
         console.log(req.body.userId)
-        const cazzoPost = foundPost.likes
-        const minchiaPost = cazzoPost.map(cazzo => cazzo.userId === req.body.userId)
-        if (!minchiaPost)
+        let cazzoPost = foundPost.likes
+        for (let i = 0; i < cazzoPost.length; i++) {
+            console.log(cazzoPost[i].userId)
+
+            if (cazzoPost[i].userId != req.body.userId) {
+                console.log("true")
+                await db.Post.Update( {
+                    $push: {
+                        likes: {
+                            ...req.body,
+                        },
+                    },
+            });
+            res.status(201).send(shitPost); 
+            } else { console.log("false")}
+        }
+        /* if (minchiaPost.length===0)
         {
             const shitPost = await db.Post.findByIdAndUpdate(postId, {
                     $push: {
@@ -97,7 +111,7 @@ exports.likePost = async (req, res, next) => {
                     },
             });
             res.status(201).send(shitPost); 
-            }
+            } */
 
 
         /* for (i = 0; i < foundPost.likes.length; i++) {
@@ -111,7 +125,7 @@ exports.likePost = async (req, res, next) => {
                     },
                 });
                 res.status(201).send(shitPost);  */
-            else { 
+            /* else { 
                     const foundPost = await db.Like.findOneAndUpdate(
                     {
                         _id: req.params.postId,
@@ -119,12 +133,12 @@ exports.likePost = async (req, res, next) => {
                     $pull: {
                         likes: req.body.userId
                         },
-                    });
+                    }); */
                 res.status(201).send("No");
                 //const foundPost = await db.Like.deleteOne({ likes: { $gte: 10 } })
                 
                 //console.log("No")
-            }
+        
         
     } catch (error) {
         console.log("Comments LIKE POST controller error: ", error);
