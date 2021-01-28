@@ -48,7 +48,7 @@ exports.profileGetSingle = async (req, res, next) => {
 		const { userId } = req.params;
 		const foundProfile = await db.User.findById(userId, {
 			password: 0,
-		}).populate("experiences");
+		}).populate(["friends", "friendRequests", "experiences"]);
 		if (!foundProfile) throw new ApiError(404, "User");
 		res.status(200).json({ data: foundProfile });
 	} catch (error) {
@@ -127,9 +127,9 @@ exports.sendFriendRequest = async (req, res, next) => {
 			throw new ApiError(404, "One or two user");
 
 		//Find the users who are sending request (current) and receiving request (requested)
-		const currentUser = users[1]; //orhan
-		const requestedUser = users[0]; //ubeyt
-
+		const currentUser = users[0]; //orhan
+		const requestedUser = users[1]; //ubeyt
+		console.log("users are: ", users);
 		//Check if the current user is exist on requestedUser's "friendRequests" list
 		for (let pendingUser of requestedUser.friendRequests) {
 			if (pendingUser.toString() === currentUser._id.toString()) {
@@ -158,8 +158,8 @@ exports.acceptFriendRequest = async (req, res, next) => {
 			throw new ApiError(404, "One or two user");
 
 		//Find the users who are sending request (current) and receiving request (requested)
-		const currentUser = users[0]; //ubeyt
-		const requestedUser = users[1]; //orhan
+		const currentUser = users[1]; //ubeyt
+		const requestedUser = users[0]; //orhan
 
 		//Check if the current user has a request from requested user
 		const pendingUser = currentUser.friendRequests.find(
@@ -167,7 +167,7 @@ exports.acceptFriendRequest = async (req, res, next) => {
 		);
 
 		if (!requestedUser) throw new ApiError(404, "Request");
-
+		console.log("current is : ", currentUser);
 		//Add as a friend to each user's "friends" list
 		currentUser.friends.push(requestedUser._id);
 		requestedUser.friends.push(currentUser._id);
@@ -196,8 +196,8 @@ exports.rejectFriendRequest = async (req, res, next) => {
 			throw new ApiError(404, "One or two user");
 
 		//Find the users who are sending request (current) and receiving request (requested)
-		const currentUser = users[0]; //ubeyt
-		const requestedUser = users[1]; //orhan
+		const currentUser = users[1]; //ubeyt
+		const requestedUser = users[0]; //orhan
 
 		//Delete requestedUser from currentUser's "friendRequests" list
 		currentUser.friendRequests = currentUser.friendRequests.filter(
