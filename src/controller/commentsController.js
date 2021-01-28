@@ -39,9 +39,11 @@ exports.commentPut = async (req, res, next) => {
         const findComment = await db.Comment.findByIdAndUpdate(
 			req.params.commentId,
 			req.body
-		);
-		if (findComment) res.status(200).json({ data: findComment });
-		else throw new ApiError(404, "Comment");
+        );
+        console.log(findComment)
+        //if (findComment)
+            res.status(200).json({ data: findComment });
+		//else throw new ApiError(404, "Comment");
     } catch (error) {
         console.log("Comments PUT controller error: ", error);
 		next(error);
