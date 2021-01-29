@@ -49,15 +49,14 @@ passport.use(
 		async (email, password, done) => {
 			try {
 				const foundUser = await db.User.findOne({ email });
-				if (!foundUser)
-					throw new ApiError(400, "Invalid email or password");
+				if (!foundUser) throw new ApiError(400, "Invalid email ");
 
 				const isPasswordsMatched = await foundUser.isValidPassword(
 					password
 				);
 
 				if (!isPasswordsMatched)
-					throw new ApiError(400, "Invalid email or password");
+					throw new ApiError(400, "Invalid password");
 
 				//Send user if everything  is ok
 				done(null, foundUser);

@@ -32,7 +32,7 @@ const userSchema = new mongoose.Schema(
 /**
  * Enyrcyp user password before saving DB
  */
-userSchema.pre("save", async function (next) {
+userSchema.methods.hashPassword = async function () {
 	try {
 		const salt = await bcrypt.genSalt(10);
 		this.password = await bcrypt.hash(this.password, salt);
@@ -40,7 +40,7 @@ userSchema.pre("save", async function (next) {
 		console.log("Bcryp hash error: ", error);
 		next(error);
 	}
-});
+};
 
 /**
  * Checks entered password and hashed password in DB

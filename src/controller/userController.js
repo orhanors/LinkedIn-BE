@@ -11,6 +11,7 @@ exports.signup = async (req, res, next) => {
 		if (foundUser) throw new ApiError(400, "Email already exist");
 
 		const newUser = new db.User({ ...req.body });
+		await newUser.hashPassword();
 		await newUser.save();
 
 		const token = signJWT(newUser); //This is gonna generate a token which contains user ID
@@ -120,15 +121,13 @@ exports.profileUploadImage = async (req, res, next) => {
 exports.sendFriendRequest = async (req, res, next) => {
 	try {
 		const { currentUserId, requestedUserId } = req.params;
-		const users = await db.User.find({
-			_id: { $in: [currentUserId, requestedUserId] },
-		});
+		//Find the users who are sending request (current) and receiving request (requested)
+		const currentUser = await db.User.findById(currentUserId);
+		const requestedUser = await db.User.findById(requestedUserId);
+		const users = [currentUser, requestedUser];
 		if (users.length === 0 || users.length === 1)
 			throw new ApiError(404, "One or two user");
 
-		//Find the users who are sending request (current) and receiving request (requested)
-		const currentUser = users[0]; //orhan
-		const requestedUser = users[1]; //ubeyt
 		console.log("users are: ", users);
 		//Check if the current user is exist on requestedUser's "friendRequests" list
 		for (let pendingUser of requestedUser.friendRequests) {
@@ -151,15 +150,12 @@ exports.sendFriendRequest = async (req, res, next) => {
 exports.acceptFriendRequest = async (req, res, next) => {
 	try {
 		const { currentUserId, requestedUserId } = req.params;
-		const users = await db.User.find({
-			_id: { $in: [currentUserId, requestedUserId] },
-		});
+		//Find the users who are sending request (current) and receiving request (requested)
+		const currentUser = await db.User.findById(currentUserId);
+		const requestedUser = await db.User.findById(requestedUserId);
+		const users = [currentUser, requestedUser];
 		if (users.length === 0 || users.length === 1)
 			throw new ApiError(404, "One or two user");
-
-		//Find the users who are sending request (current) and receiving request (requested)
-		const currentUser = users[1]; //ubeyt
-		const requestedUser = users[0]; //orhan
 
 		//Check if the current user has a request from requested user
 		const pendingUser = currentUser.friendRequests.find(
@@ -189,15 +185,12 @@ exports.acceptFriendRequest = async (req, res, next) => {
 exports.rejectFriendRequest = async (req, res, next) => {
 	try {
 		const { currentUserId, requestedUserId } = req.params;
-		const users = await db.User.find({
-			_id: { $in: [currentUserId, requestedUserId] },
-		});
+		//Find the users who are sending request (current) and receiving request (requested)
+		const currentUser = await db.User.findById(currentUserId);
+		const requestedUser = await db.User.findById(requestedUserId);
+		const users = [currentUser, requestedUser];
 		if (users.length === 0 || users.length === 1)
 			throw new ApiError(404, "One or two user");
-
-		//Find the users who are sending request (current) and receiving request (requested)
-		const currentUser = users[1]; //ubeyt
-		const requestedUser = users[0]; //orhan
 
 		//Delete requestedUser from currentUser's "friendRequests" list
 		currentUser.friendRequests = currentUser.friendRequests.filter(
