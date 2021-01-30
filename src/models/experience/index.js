@@ -3,9 +3,9 @@ const mongoose = require("mongoose");
 const experienceSchema = new mongoose.Schema(
 	{
 		role: { type: String },
-		company: { type: String },
+		company: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
 		startDate: { type: Date, default: Date.now },
-		endDate: { type: Date, default: Date.now },
+		endDate: { type: Date },
 		description: { type: String },
 		area: { type: String },
 		image: { type: String },
