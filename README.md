@@ -1,6 +1,6 @@
 # LinkedIn Web Clone Backend
 
-LinkedIn web clone is a web application which is implemented using NodeJs,ExpressJs,PassportJs,JWT and MongoDB. Frontend side of this project can be found [here](https://github.com/orhanors/LinkedIn-FE)
+LinkedIn web clone is a web application which is implemented using NodeJs,ExpressJs,PassportJs,JWT and MongoDB. Frontend side of this project can be found [here](https://github.com/orhanors/LinkedIn-FE/)
 
 ### Features
 
