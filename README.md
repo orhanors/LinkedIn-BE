@@ -41,6 +41,7 @@ LinkedIn web clone is a web application which is implemented using NodeJs,Expres
 	{ timestamp: true }
 );
 ```
+
 </details>
 
 
